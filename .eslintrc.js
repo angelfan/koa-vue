@@ -81,8 +81,7 @@ module.exports = {
     // 强制每行只能小于等于120个字
     'max-len': [2, 120],
     'import/no-unresolved': 0,
-    // 禁止出现未使用过的表达式
-    'no-unused-expressions': 1,
+    "no-unused-expressions": 2,//禁止无用的表达式
     'no-trailing-spaces': 0,
     // 换行风格
     'linebreak-style': [0, 'Unix'],
