@@ -27,7 +27,7 @@
           </el-col>
         </el-tab-pane>
         <el-tab-pane label="已完成事项" name="second">
-          <template v-if="count > 0">
+          <template v-if="count == 0">
             <template v-for="(item, index) in list">
               <div class="todo-list" v-if="item.status == true">
                 <span class="item finished">
@@ -71,6 +71,7 @@
         this.id = '';
         this.name = '';
       }
+      this.getTodolist();
     },
     computed: { // 计算属性用于计算是否已经完成了所有任务
       Done() {
@@ -98,22 +99,54 @@
         const obj = {
           status: false,
           content: this.todos,
+          id: this.id,
         };
-        this.list.push(obj);
+        this.$http.post('/api/todo_lists', obj).then((res) => {
+          if (res.status == 200) {
+            this.$message({
+              type: 'success',
+              message: '创建成功！',
+            });
+            this.getTodolist();
+          } else {
+            this.$message.error('创建失败！');
+          }
+        }, (err) => {
+          this.$message.error('创建失败！');
+          console.log(err);
+        });
         this.todos = '';
       },
       finished(index) {
-        this.$set(this.list[index], 'status', true); // 通过set的方法让数组的变动能够让Vue检测到
-        this.$message({
-          type: 'success',
-          message: '任务完成',
+        this.$http.put(`/api/todo_lists/${this.list[index].id}/toggle`).then((res) => {
+          if (res.status == 200) {
+            this.$message({
+              type: 'success',
+              message: '任务完成！',
+            });
+            this.getTodolist();
+          } else {
+            this.$message.error('完成失败！');
+          }
+        }, (err) => {
+          this.$message.error('完成失败！');
+          console.log(err);
         });
       },
       remove(index) {
-        this.list.splice(index, 1);
-        this.$message({
-          type: 'info',
-          message: '任务删除',
+        this.$http.delete(`/api/todo_lists/${this.list[index].id}`).then((res) => {
+          if (res.status == 200) {
+            this.$message({
+              type: 'success',
+              message: '任务删除成功！',
+            });
+            this.getTodolist();
+          } else {
+            this.$message.error('任务删除失败！');
+          }
+        }, (err) => {
+          this.$message.error('任务删除失败！');
+          console.log(err);
         });
       },
       restore(index) {
@@ -131,6 +164,18 @@
         } else {
           return null;
         }
+      },
+      getTodolist() {
+        this.$http.get('/api/todo_lists/').then((res) => {
+          if (res.status == 200) {
+            this.list = res.data; // 将获取的信息塞入实例里的list
+          } else {
+            this.$message.error('获取列表失败！');
+          }
+        }, (err) => {
+          this.$message.error('获取列表失败！');
+          console.log(err);
+        });
       },
     },
   };
