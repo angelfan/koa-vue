@@ -26,7 +26,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  const token = sessionStorage.getItem('demo-token');
+  const token = window.localStorage.getItem('demo-token');
   if (to.path === '/') {
     if (token !== 'null' && token != null) {
       next('/todolist');

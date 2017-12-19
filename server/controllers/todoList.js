@@ -1,7 +1,6 @@
 const db = require('../models/index');
 
 const Index = async (ctx) => {
-  console.log(ctx.state)
   const userId = ctx.state.user.id;
   const user = await db.User.findById(userId);
   const Lists = await user.getLists();
@@ -24,9 +23,8 @@ const Destroy = async (ctx) => {
 };
 
 const Toggle = async (ctx) => {
-  const data = ctx.request.body;
   const userId = ctx.state.user.id;
-  const list = await db.List.findOne({ user_id: userId, id: data.id });
+  const list = await db.List.findOne({ where: { user_id: userId, id: ctx.params.id } });
   list.status = !list.status;
   await list.save();
   ctx.body = 'success';

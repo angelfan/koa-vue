@@ -150,14 +150,23 @@
         });
       },
       restore(index) {
-        this.$set(this.list[index], 'status', false);
-        this.$message({
-          type: 'info',
-          message: '任务还原',
+        this.$http.put(`/api/todo_lists/${this.list[index].id}/toggle`).then((res) => {
+          if (res.status == 200) {
+            this.$message({
+              type: 'success',
+              message: '任务还原！',
+            });
+            this.getTodolist();
+          } else {
+            this.$message.error('还原失败！');
+          }
+        }, (err) => {
+          this.$message.error('还原失败！');
+          console.log(err);
         });
       },
       getUserInfo() { // 获取用户信息
-        const token = sessionStorage.getItem('demo-token');
+        const token = window.localStorage.getItem('demo-token');
         if (token !== null && token !== 'null') {
           const decode = jwt.decode(token);
           return decode;

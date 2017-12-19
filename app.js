@@ -6,6 +6,9 @@ const KoaJson = require('koa-json');
 const KoaLogger = require('koa-logger');
 const KoaBodyParser = require('koa-bodyparser');
 const jwt = require('koa-jwt');
+const path =require('path')
+const serve = require('koa-static');
+const historyApiFallback = require('koa-history-api-fallback');
 
 const userRouter = require('./server/routes/user');
 const apiRouter = require('./server/routes/api.js')
@@ -49,6 +52,8 @@ app.on('error', function(err, ctx) {
 app.use(userRouter.routes());
 router.use("/api", jwt({secret: 'xxxxxx', passthrough:true}), apiRouter.routes());
 app.use(router.routes());
+app.use(historyApiFallback());
+app.use(serve(path.resolve('dist')));
 
 
 app.listen(8889, () => {
